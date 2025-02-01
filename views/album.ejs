@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("./partials/head.ejs") %>
+<body>
+    <%- include("./partials/nav.ejs") %>
+    <header>
+        <h1>Welcome to the Music Board</h1>
+    </header>
+
+     <% album.forEach(item => { %>
+        <%- include(".partials/card.ejs", {content: item}) %>
+    <%}); %>
+    <main>
+        <p>This is a basic HTML template for the Music Board application.</p>
+    </main>
+    <%- include("./partials/footer.ejs") %>
+</body>
+</html>
