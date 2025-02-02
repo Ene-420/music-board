@@ -29,7 +29,8 @@ musicRouter.get("/search", (req, res) => {
     res.render('search',{search: result} );
   }
   else{
-
+    const response  = apiSearchResult(item);
+    res.render('search', {search: response})
   }
 
 });
@@ -40,7 +41,7 @@ async function queryResult(query){
     const [albumResult, songResult, artistResult] =  await Promise.all([
       Album.find({title: `${query}`}),
       Song.find({title:`${query}`}),
-      Artist.find({title: `${query}`}),
+      Artist.find({name: `${query}`}),
     ]);
     return [...albumResult, ...songResult, ...artistResult ]
 
@@ -54,20 +55,20 @@ module.exports = musicRouter;
 async function apiSearchResult(query){
   const fetch = require('node-fetch');
 
-const url = 'https://deezerdevs-deezer.p.rapidapi.com/search?q=eminem';
-const options = {
-  method: 'GET',
-  headers: {
-    'x-rapidapi-key': 'fd1b4565a3msh304df7d6e8195dep125480jsne20d6800ea89',
-    'x-rapidapi-host': 'deezerdevs-deezer.p.rapidapi.com'
-  }
-};
+  const url = `https://deezerdevs-deezer.p.rapidapi.com/search?q=${query}`;
+  const options = {
+    method: 'GET',
+    headers: {
+      'x-rapidapi-key': process.env.RAPID_API_KEY,
+      'x-rapidapi-host': process.env.RAPID_API_HOST
+    }
+  };
 
-try {
-	const response = await fetch(url, options);
-	const result = await response.text();
-	console.log(result);
-} catch (error) {
-	console.error(error);
-}
+  try {
+    const response = await fetch(url, options);
+    const result = await response.text();
+    return  result;
+  } catch (error) {
+    console.error(error);
+  }
 }
