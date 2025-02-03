@@ -2,6 +2,7 @@ const { Router } = require("express");
 const Artist = require("../model/artist");
 const Song = require("../model/song");
 const Album = require("../model/album");
+const User = require("../model/user");
 //const { user } = require("pg/lib/defaults");
 const musicRouter = Router();
 
@@ -71,4 +72,10 @@ async function apiSearchResult(query){
   } catch (error) {
     console.error(error);
   }
+}
+
+
+function AddToLibrary(event){
+  const {dataset} = event.target;
+  User
 }
