@@ -17,11 +17,11 @@ const songSchema = new Schema({
 
   album_id: {
         type: Number,
-        required:true
+        required:false
   },
   album_name:{
       type: String,
-      required: true
+      required: false
   },
 
   duration:{

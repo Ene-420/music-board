@@ -6,6 +6,8 @@ const User = require("../model/user");
 //const { user } = require("pg/lib/defaults");
 const musicRouter = Router();
 
+const searchResult = [];
+
 app.use(express.urlencoded({ extended: true }));
 
 musicRouter.get("/library", (req, res) => {
@@ -20,21 +22,26 @@ musicRouter.get("/album", (req, res) => {
   res.render("album", {album: []});
 });
 
-musicRouter.get("/search", (req, res) => {
+musicRouter.get("/search", async (req, res) => {
   //res.render("song");
   const item = req.body.query;
   
   const result = queryResult(item);
 
-  if (result){
+  if (result.length >0){
     res.render('search',{search: result} );
   }
   else{
-    const response  = apiSearchResult(item);
+    const response  = await apiSearchResult(item);
+    searchResult = [...response];
     res.render('search', {search: response})
   }
 
 });
+
+musicRouter.post('save-song', async(req, res) =>{
+  
+})
 
 
 async function queryResult(query){
@@ -77,5 +84,5 @@ async function apiSearchResult(query){
 
 function AddToLibrary(event){
   const {dataset} = event.target;
-  User
+  //User
 }

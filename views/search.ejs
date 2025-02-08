@@ -7,6 +7,9 @@
         <h1>Welcome to the Music Board</h1>
     </header>
     <main>
+        <% search.forEach(item => { %>
+            <%- include(".partials/card.ejs", {content: item}) %>
+        <%}); %>
         <p>This is a basic HTML template for the Music Board application.</p>
     </main>
     <%- include("./partials/footer.ejs") %>

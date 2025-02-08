@@ -20,15 +20,19 @@ async function apiSearchResult(query){
         console.error(error);
       }
 }
-// make POST requst to Search route  
- async function getSearchBarQuery(request){
-  fetch('search', {
+// make POST requst to Search route  --> Search Button
+ export async function getSongID(event){
+  const {dataset} = event.target;
+  fetch('save-song', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(request.body)
+    body: JSON.stringify(dataset)
   })
   .then(response => response.json())
   .then(data =>{
     console.log('REQUEST: ',data)
+  })
+  .catch(error =>{
+    console.error('Error', error);
   });
 }
