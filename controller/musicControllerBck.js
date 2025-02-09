@@ -8,6 +8,7 @@ const Song = require('../model/song.js');
 
 const apiSearchQueryResponse = [];    ///Save Api search result
 
+// #region DB
 // Query database for entries matching query
 async function queryResult(query){
     try {
@@ -22,11 +23,9 @@ async function queryResult(query){
       console.log(error)
     }
   }
+  // #endregion
 
-  // Frontend sends query request to the backend and backend checks the DB
-  // then if exists return finding
-  // else make api request
-
+// #region API
   //uses search bar query to make API request
   async function makeApiCall(query){
     const fetch = require('node-fetch');
@@ -49,25 +48,72 @@ async function queryResult(query){
       console.error(error);
     }
   }
+// #endregion
 
-  async function saveSingleSongToDB(index){
-    const songItem = apiSearchQueryResponse[index];
-    const song = new Song({
-      _id: songItem.id,
-      title: songItem.title,
-      artist: songItem.artist.name,
-      album_id: songItem.album.id,
-      album_name: songItem.album.title,
-      duration: songItem.duration,
-      preview: songItem.preview,
-      song_art:{
-        cover: songItem.album.cover,
-        cover_medium: songItem.album.cover_medium,
-        cover_large: songItem.album.cover_large
-      } 
+// #region User
+  async function saveToUserAlbumLibrary(userID, albumID){
+    await User.updateOne(
+      {userID},
+      {$set:
+        {library:{
+          album : [].push(trackID)
+        }
+      }
+    },{upsert: true}
+    ).then()
+    .then()
+    .catch(error => {
+      console.log(`Error: ${error}`)
+    })
+  }
+
+  async function saveToUserSingleLibrary(userID, trackID){
+
+  }
+// #endregion
+
+// #region Song
+async function saveSingleSongToDB(index){
+  const songItem = apiSearchQueryResponse[index];
+  const song = new Song({
+    _id: songItem.id,
+    title: songItem.title,
+    artist: songItem.artist.name,
+    album_id: songItem.album.id,
+    album_name: songItem.album.title,
+    duration: songItem.duration,
+    preview: songItem.preview,
+    song_art:{
+      cover: songItem.album.cover,
+      cover_medium: songItem.album.cover_medium,
+      cover_large: songItem.album.cover_large
+    } 
+  });
+  song.save()
+  .then()
+  .then()
+  .catch(error =>{
+    console.log(`Error: ${error}`)
+  })
+}
+  
+  // #endregion
+
+// #region Album
+  /// Save to album in DB
+  async function saveToAlbumInDB(albumId,songId){
+    await Album.updateOne(
+      {albumId}, 
+      {
+        $set: {song_ids:[].push(songId)}
+      },
+      {$upsert: true}
+
+    ).then()
+    .catch(error => {
+      console.log(`Error: ${error}`)
     });
 
-    const user = new User();
   }
 
   /// Add New album/single to Library
@@ -91,23 +137,9 @@ async function queryResult(query){
       console.log(`Error: ${error}`)
     })
   }
+ // #endregion 
 
-  /// Save to album in DB
-  async function saveToAlbumInDB(albumId,songId){
-    await Album.updateOne(
-      {albumId}, 
-      {
-        $set: {song_ids:[].push(songId)}
-      },
-      {$upsert: true}
-
-    ).then()
-    .catch(error => {
-      console.log(`Error: ${error}`)
-    });
-
-  }
-
+// #region Artist
   // Save artist to DB 
   async function saveArtistToDB(index){
     const artistItem = apiSearchQueryResponse[index];
@@ -128,6 +160,6 @@ async function queryResult(query){
     });
 
   }
-
+// #endregion
   //Apply async to API requests, Form handling, and Database requests
 

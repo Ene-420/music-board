@@ -1,17 +1,27 @@
 const { Router } = require("express");
+const express = require('express');
+//const app = express();
 const Artist = require("../model/artist");
 const Song = require("../model/song");
 const Album = require("../model/album");
 const User = require("../model/user");
 //const { user } = require("pg/lib/defaults");
+const {getSongID, testButton} = require('../controller/musicControllerUI.js');
 const musicRouter = Router();
 
 const searchResult = [];
-
-app.use(express.urlencoded({ extended: true }));
+console.log('I got here')
+const data = {
+  title: 'Library',
+  library: [],
+  testButton: testButton
+}
+musicRouter.use(express.urlencoded({ extended: true }));
 
 musicRouter.get("/library", (req, res) => {
-  res.render("library", {library: []});
+  console.log('I got to library')
+  
+  res.render("library",  data);
 });
 
 musicRouter.get("/artist", (req, res) => {
@@ -22,24 +32,15 @@ musicRouter.get("/album", (req, res) => {
   res.render("album", {album: []});
 });
 
-musicRouter.get("/search", async (req, res) => {
+musicRouter.post("/search", async (req, res) => {
   //res.render("song");
   const item = req.body.query;
   
-  const result = queryResult(item);
-
-  if (result.length >0){
-    res.render('search',{search: result} );
-  }
-  else{
-    const response  = await apiSearchResult(item);
-    searchResult = [...response];
-    res.render('search', {search: response})
-  }
-
+  console.log({item});
+  res.render("search", {search: []});
 });
 
-musicRouter.post('save-song', async(req, res) =>{
+musicRouter.post('/save-song', async(req, res) =>{
   
 })
 
@@ -57,7 +58,7 @@ async function queryResult(query){
     console.log(error)
   }
 }
-module.exports = musicRouter;
+
 
 
 async function apiSearchResult(query){
@@ -86,3 +87,5 @@ function AddToLibrary(event){
   const {dataset} = event.target;
   //User
 }
+
+module.exports = musicRouter;

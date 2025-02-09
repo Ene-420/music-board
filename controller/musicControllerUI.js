@@ -1,6 +1,6 @@
 // Controller for UI
 
-//uses search bar query to make API request
+//uses search bar query to make API request --> Search Button
 async function apiSearchResult(query){
     const fetch = require('node-fetch');
   
@@ -20,8 +20,8 @@ async function apiSearchResult(query){
         console.error(error);
       }
 }
-// make POST requst to Search route  --> Search Button
- export async function getSongID(event){
+// make POST requst to Search route  --> Save Button
+async function getSongID(event){
   const {dataset} = event.target;
   fetch('save-song', {
     method: 'POST',
@@ -36,3 +36,10 @@ async function apiSearchResult(query){
     console.error('Error', error);
   });
 }
+
+function testButton(event){
+  console.log('Button clicked')
+  
+}
+
+module.exports = {getSongID, apiSearchResult, testButton}
