@@ -18,7 +18,12 @@ const userSchema = new Schema({
         singles:[{
             type: Number,
             required: false
-        }]
+        }],
+        artists:[{
+            type: Number,
+            required: false
+        }]  
+
     }
 
 

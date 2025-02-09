@@ -73,6 +73,26 @@ async function queryResult(query){
 // #endregion
 
 // #region Song
+// Get singles in DB
+async function getSingleFromDB(userID){
+    try {
+      const userSingleList = [];
+      const userSinglesID = await User.find({
+        {id:userID }
+      })
+      userSinglesID.library.singles.forEach(item => {
+        const song = Song.find({
+          {id:item}
+        })
+        userSingleList.push(song)
+      });
+      return userSingleList;
+  }
+  catch(error){
+    console.log(`Error: ${error}`)
+  }
+}
+  // Save song to DB
 async function saveSingleSongToDB(index){
   const songItem = apiSearchQueryResponse[index];
   const song = new Song({
@@ -100,6 +120,26 @@ async function saveSingleSongToDB(index){
   // #endregion
 
 // #region Album
+
+// get albums from DB
+async function getAlbumFromDB(userID){
+    try {
+      const userAblumList = [];
+      const userAblumsID = await User.find({
+        {id:userID }
+      })
+      userAblumsID.library.album.forEach(item => {
+        const album = Album.find({
+          {id:item}
+        })
+        userAblumList.push(album)
+      });
+      return userAblumList;
+  }
+  catch(error){
+    console.log(`Error: ${error}`)
+  }
+}
   /// Save to album in DB
   async function saveToAlbumInDB(albumId,songId){
     await Album.updateOne(
@@ -140,6 +180,25 @@ async function saveSingleSongToDB(index){
  // #endregion 
 
 // #region Artist
+  // Get artists from DB
+  async function getArtistFromDB(userID){
+    try {
+      const userArtistList = [];
+      const userArtistID = await User.find({
+        {id:userID }
+      })
+      userArtistID.library.artists.forEach(item => {
+        const artist = Artist.find({
+          {id:item}
+        })
+        userArtistList.push(artist)
+      });
+      return userArtistList;
+  }
+  catch(error){
+    console.log(`Error: ${error}`)
+    }
+}
   // Save artist to DB 
   async function saveArtistToDB(index){
     const artistItem = apiSearchQueryResponse[index];
