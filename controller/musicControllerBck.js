@@ -78,7 +78,7 @@ async function getSingleFromDB(userID){
     try {
       const userSingleList = [];
       const userSinglesID = await User.find({
-        {id:userID }
+        {id:userID },
       })
       userSinglesID.library.singles.forEach(item => {
         const song = Song.find({
@@ -89,7 +89,7 @@ async function getSingleFromDB(userID){
       return userSingleList;
   }
   catch(error){
-    console.log(`Error: ${error}`)
+    console.log(`Error: ${error}`);
   }
 }
   // Save song to DB
