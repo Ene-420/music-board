@@ -51,6 +51,7 @@ async function queryResult(query){
 // #endregion
 
 // #region User
+  // save album to user library
   async function saveToUserAlbumLibrary(userID, albumID){
     await User.updateOne(
       {userID},
@@ -67,8 +68,37 @@ async function queryResult(query){
     })
   }
 
+  // save single to user library
   async function saveToUserSingleLibrary(userID, trackID){
-
+      await User.updateOne(
+        {userID},
+        {$set:
+          {library:{
+            singles : [].push(trackID)
+          }
+        }
+        }, {upsert: true}
+      ).then()
+      .then()
+      .catch(error => {
+        console.log(`Error: ${error}`)
+      })
+  }
+  //save artist to user library
+  async function saveToUserArtistLibrary(userID, artistID){
+    await User.updateOne(
+      {userID},
+      {$set:
+        {library:{
+          artists : [].push(artistID)
+        }
+      }
+    },{upsert: true}
+    ).then()
+    .then()
+    .catch(error => {
+      console.log(`Error: ${error}`)
+    })
   }
 // #endregion
 
