@@ -6,7 +6,7 @@ const Song = require("../model/song");
 const Album = require("../model/album");
 const User = require("../model/user");
 //const { user } = require("pg/lib/defaults");
-const {getSongID, testButton} = require('../controller/musicControllerUI.js');
+const {getSongID, testButton, } = require('../controller/musicControllerUI.js');
 const musicRouter = Router();
 
 const searchResult = [];
@@ -40,6 +40,9 @@ musicRouter.post("/search", async (req, res) => {
   res.render("search", {search: []});
 });
 
+musicRouter.get("/search", async (req, res) => {
+  
+})
 musicRouter.post('/save-song', async(req, res) =>{
   
 })
