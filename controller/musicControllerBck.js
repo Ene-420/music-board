@@ -55,12 +55,8 @@ async function queryResult(query){
   async function saveToUserAlbumLibrary(userID, albumID){
     await User.updateOne(
       {userID},
-      {$set:
-        {library:{
-          album : [].push(trackID)
-        }
-      }
-    },{upsert: true}
+      {$addToSet:{'library.album': albumID} },
+      {upsert: true}
     ).then()
     .then()
     .catch(error => {
@@ -72,12 +68,8 @@ async function queryResult(query){
   async function saveToUserSingleLibrary(userID, trackID){
       await User.updateOne(
         {userID},
-        {$set:
-          {library:{
-            singles : [].push(trackID)
-          }
-        }
-        }, {upsert: true}
+        {$addToSet:{'library.singles': trackID} },
+        {upsert: true}
       ).then()
       .then()
       .catch(error => {
@@ -88,12 +80,8 @@ async function queryResult(query){
   async function saveToUserArtistLibrary(userID, artistID){
     await User.updateOne(
       {userID},
-      {$set:
-        {library:{
-          artists : [].push(artistID)
-        }
-      }
-    },{upsert: true}
+      {$addToSet:{'library.artists':artistID}},
+      {upsert: true}
     ).then()
     .then()
     .catch(error => {
@@ -104,7 +92,7 @@ async function queryResult(query){
 
 // #region Song
 // Get singles in DB
-async function getSingleFromDB(userID){
+/*async function getSingleFromDB(userID, query){
     try {
       const userSingleList = [];
       const userSinglesID = await User.find({
@@ -121,7 +109,7 @@ async function getSingleFromDB(userID){
   catch(error){
     console.log(`Error: ${error}`);
   }
-}
+}*/
   // Save song to DB
 async function saveSingleSongToDB(index){
   const songItem = apiSearchQueryResponse[index];
@@ -152,7 +140,7 @@ async function saveSingleSongToDB(index){
 // #region Album
 
 // get albums from DB
-async function getAlbumFromDB(userID){
+/* async function getAlbumFromDB(userID){
     try {
       const userAblumList = [];
       const userAblumsID = await User.find({
@@ -169,14 +157,12 @@ async function getAlbumFromDB(userID){
   catch(error){
     console.log(`Error: ${error}`)
   }
-}
+} */
   /// Save to album in DB
   async function saveToAlbumInDB(albumId,songId){
     await Album.updateOne(
       {albumId}, 
-      {
-        $set: {song_ids:[].push(songId)}
-      },
+      {$addToSet: {song_ids:songId}},
       {$upsert: true}
 
     ).then()
@@ -211,7 +197,7 @@ async function getAlbumFromDB(userID){
 
 // #region Artist
   // Get artists from DB
-  async function getArtistFromDB(userID){
+/*   async function getArtistFromDB(userID){
     try {
       const userArtistList = [];
       const userArtistID = await User.find({
@@ -229,7 +215,7 @@ async function getAlbumFromDB(userID){
     console.log(`Error: ${error}`)
     }
 }
-  // Save artist to DB 
+ */  // Save artist to DB 
   async function saveArtistToDB(index){
     const artistItem = apiSearchQueryResponse[index];
     const artist = new Artist({
@@ -252,3 +238,14 @@ async function getAlbumFromDB(userID){
 // #endregion
   //Apply async to API requests, Form handling, and Database requests
 
+module.exports = {
+    queryResult,
+    makeApiCall,
+    saveToUserAlbumLibrary,
+    saveToUserSingleLibrary,
+    saveToUserArtistLibrary,
+    saveSingleSongToDB,
+    saveToAlbumInDB,
+    saveNewAlbumToDB,
+    saveArtistToDB
+}

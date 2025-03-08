@@ -1,25 +1,23 @@
 // Controller for UI
 
+// I dont think i need this
 //uses search bar query to make API request --> Search Button
-async function apiSearchResult(query){
-    const fetch = require('node-fetch');
-  
-    const url = `https://deezerdevs-deezer.p.rapidapi.com/search?q=${query}`;
-    const options = {
-      method: 'GET',
-      headers: {
-        'x-rapidapi-key': process.env.RAPID_API_KEY,
-        'x-rapidapi-host': process.env.RAPID_API_HOST
-      }
-    };
-    try {
-        const response = await fetch(url, options);
-        const result = await response.text();
-        return  result;
-      } catch (error) {
-        console.error(error);
-      }
-}
+/* async function getSearchQuery(event){
+  const query = document.getElementById('search-bar').value;
+  fetch('search', {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({query})
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('REQUEST: ', data)
+  })
+  .catch(error =>{
+    console.error('Error', error);
+  });
+} */
+
 // make POST requst to Search route  --> Save Button
 async function getSongID(event){
   const {dataset} = event.target;
@@ -42,4 +40,4 @@ function testButton(event){
   
 }
 
-module.exports = {getSongID, apiSearchResult, testButton}
+module.exports = {getSongID, getSearchQuery, testButton}
