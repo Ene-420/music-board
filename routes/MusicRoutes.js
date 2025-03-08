@@ -40,7 +40,7 @@ musicRouter.post("/search", async (req, res) => {
   res.render("search", {search: []});
 });
 
-musicRouter.get("/search", async (req, res) => {
+musicRouter.get("/search", async (req, res) =>{
   
 })
 musicRouter.post('/save-song', async(req, res) =>{
@@ -86,9 +86,6 @@ async function apiSearchResult(query){
 }
 
 
-function AddToLibrary(event){
-  const {dataset} = event.target;
-  //User
-}
+
 
 module.exports = musicRouter;
