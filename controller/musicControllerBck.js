@@ -7,7 +7,77 @@ const Album = require('../model/album.js');
 const Song = require('../model/song.js');
 
 const apiSearchQueryResponse = [];    ///Save Api search result
+const transformedApiResponse = [];      ///Save transformed API response
 
+
+async function callBackend(query){
+  const {query, source} = query;
+
+  try{
+    if (source.includes('library')){
+      return await queryResult(query)
+    }
+    else{
+      return await makeApiCall(query)
+        }
+  }
+  catch(error){
+    console.log(`Error: ${error}`)
+  }
+
+
+}
+
+
+// transform API response to match DB schema
+async function transformApiResult(data){
+  try{
+    if (data.total < 1){
+      return new Error('No data found')
+    }
+    else{
+      return data.data.map(item =>{
+        if(item.title.includes(item.album.title)){
+          return new Song({
+            _id: item.id,
+            title: item.title,
+            artist: item.artist.name,
+            album_id: item.album.id,
+            album_name: item.album.title,
+            duration: item.duration,
+            preview: item.preview,
+            song_art:{
+              cover: item.album.cover,
+              cover_medium: item.album.cover_medium,
+              cover_large: item.album.cover_large
+            }
+          })
+        }
+      
+
+        else{
+          return new Album({
+            _id: item.album.id,
+            title: item.album.title,
+            artist_id: item.artist.id,
+            song_ids:[item.id],
+            album_art:{
+              cover: item.album.cover,
+              cover_medium:item.album.cover_medium,
+              cover_large:item.album.cover_large
+            }
+          })
+        }
+      })
+  
+    //return transformedApiResponse
+    }
+  }catch(error){
+    console.log(`Error: ${error}`)
+    return new Error('Error transforming data')
+  }
+
+}
 // #region DB
 // Query database for entries matching query
 async function queryResult(query){
@@ -43,6 +113,8 @@ async function queryResult(query){
       const response = await fetch(url, options);
       const result = await response.text();
       apiSearchQueryResponse = [...result]
+      transformedApiResponse = [...transformApiResult(result)]
+
       return  result;
     } catch (error) {
       console.error(error);
@@ -239,8 +311,7 @@ async function saveSingleSongToDB(index){
   //Apply async to API requests, Form handling, and Database requests
 
 module.exports = {
-    queryResult,
-    makeApiCall,
+    callBackend,
     saveToUserAlbumLibrary,
     saveToUserSingleLibrary,
     saveToUserArtistLibrary,

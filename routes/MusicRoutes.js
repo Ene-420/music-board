@@ -7,20 +7,21 @@ const Album = require("../model/album");
 const User = require("../model/user");
 //const { user } = require("pg/lib/defaults");
 const {getSongID, testButton, } = require('../controller/musicControllerUI.js');
+const {callBackend} = require('../controller/musicControllerBck.js');
 const musicRouter = Router();
 
-const searchResult = [];
-console.log('I got here')
-const data = {
-  title: 'Library',
-  library: [],
-  testButton: testButton
-}
+//const searchResult = [];
+//console.log('I got here')
+
 musicRouter.use(express.urlencoded({ extended: true }));
 
 musicRouter.get("/library", (req, res) => {
   console.log('I got to library')
-  
+  const data = {
+    title: 'Library',
+    library: [],
+    testButton: testButton
+  }
   res.render("library",  data);
 });
 
@@ -34,17 +35,18 @@ musicRouter.get("/album", (req, res) => {
 
 musicRouter.post("/search", async (req, res) => {
   //res.render("song");
-  const item = req.body.query;
+  const query = req.body;
   
-  console.log({item});
-  res.render("search", {search: []});
+  
 });
 
 musicRouter.get("/search", async (req, res) =>{
   
 })
 musicRouter.post('/save-song', async(req, res) =>{
-  
+  const response = await callBackend(req.body);
+  const data = {}
+  res.render('search', data);
 })
 
 
