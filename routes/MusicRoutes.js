@@ -19,8 +19,8 @@ musicRouter.get("/library", (req, res) => {
   console.log('I got to library')
   const data = {
     title: 'Library',
-    library: [],
-    testButton: testButton
+    library: []||[],
+    getSongID: getSongID
   }
   res.render("library",  data);
 });
@@ -34,9 +34,13 @@ musicRouter.get("/album", (req, res) => {
 });
 
 musicRouter.post("/search", async (req, res) => {
-  //res.render("song");
-  const query = req.body;
-  
+  const response = await callBackend(req.body);
+  const data = {
+    title: 'Search',
+    search: response,
+    getSongID: getSongID
+  }
+  res.render('search', data);
   
 });
 
@@ -44,9 +48,8 @@ musicRouter.get("/search", async (req, res) =>{
   
 })
 musicRouter.post('/save-song', async(req, res) =>{
-  const response = await callBackend(req.body);
-  const data = {}
-  res.render('search', data);
+  const songID = req.body;
+ 
 })
 
 
@@ -87,7 +90,19 @@ async function apiSearchResult(query){
   }
 }
 
+/*
+on test branch to merge with main -->
+git pull origin test
+git checkout main
+git merge test
+git push origin main
 
+on main branch to merge with test -->
+git pull origin main
+git checkout test
+git merge main
+git push origin test
+ */
 
 
 module.exports = musicRouter;

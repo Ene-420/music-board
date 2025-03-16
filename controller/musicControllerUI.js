@@ -29,6 +29,7 @@ async function getSongID(event){
   .then(response => response.json())
   .then(data =>{
     console.log('REQUEST: ',data)
+    return data
   })
   .catch(error =>{
     console.error('Error', error);

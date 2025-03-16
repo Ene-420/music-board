@@ -29,6 +29,9 @@ async function callBackend(query){
 }
 
 
+async function addToLibrary(ID){
+
+}
 // transform API response to match DB schema
 async function transformApiResult(data){
   try{

@@ -10,7 +10,7 @@
     <main>
         <% if (library.length > 0) { %>
             <% library.forEach(item => { %>
-                <%- include("./partials/card.ejs", { content: item }) %>
+                <%- include("./partials/cardUser.ejs", { content: item, getSongID:getSongID }) %>
             <% }) %>
         <% } else { %>
             <p>Nothing to display</p>
