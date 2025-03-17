@@ -14,9 +14,19 @@ const artistSchema = new Schema({
     
     cover:{type:String, required:true},
     cover_medium:{type:String, required:true},
-    cover_large:{type:String, required:true},
+    cover_large:{type:String, required:true},  
+  },
+  library:{
+    album:[{
+        type: Number,
+        required: false
+    }],
+    singles:[{
+        type: Number,
+        required: false
+    }],
+    required: false
 
-     
   }
 }, {timestamps: true});
 

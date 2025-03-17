@@ -11,8 +11,8 @@ const songSchema = new Schema({
         required:true
   },
   artist:{
-      type: String,
-      required:true
+    id:{type: Number, required:true},
+    name:{type: String, required:true},
   },
 
   album_id: {

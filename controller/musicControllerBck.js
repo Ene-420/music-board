@@ -8,6 +8,7 @@ const Song = require('../model/song.js');
 
 const apiSearchQueryResponse = [];    ///Save Api search result
 const transformedApiResponse = [];      ///Save transformed API response
+const transformedArtistResponse = [];   ///Save transformed Artist response
 
 
 async function callBackend(query){
@@ -28,9 +29,28 @@ async function callBackend(query){
 
 }
 
-
+/// Usses Song ID to add song to library
 async function addToLibrary(ID){
+  try{
+    const item = transformedApiResponse.find(item => item._id === ID);
+    switch (item.constructor.name){
+      case 'Song':
+        await saveToUserSingleLibrary(userID, item._id);
+        await saveToUserArtistLibrary(userID, item._id);
+        break;
+      case 'Album':
+        await saveToUserAlbumLibrary(userID, item._id, item.song_ids[0]); );
+        await saveToUserArtistLibrary(userID, item._id);
+        break;
+      default:
+        return new Error('Error adding to library')
+    }
 
+  }
+  catch(error){
+    console.log(`Error: ${error}`)
+    return new Error('Error adding to library')
+  }
 }
 // transform API response to match DB schema
 async function transformApiResult(data){
@@ -44,7 +64,11 @@ async function transformApiResult(data){
           return new Song({
             _id: item.id,
             title: item.title,
-            artist: item.artist.name,
+            artist:{
+              name: item.artist.name,
+              id: item.artist.id
+
+            },
             album_id: item.album.id,
             album_name: item.album.title,
             duration: item.duration,
@@ -62,7 +86,10 @@ async function transformApiResult(data){
           return new Album({
             _id: item.album.id,
             title: item.album.title,
-            artist_id: item.artist.id,
+            artist:{
+              id: item.artist.id,
+              name: item.artist.name
+            },
             song_ids:[item.id],
             album_art:{
               cover: item.album.cover,
@@ -80,6 +107,29 @@ async function transformApiResult(data){
     return new Error('Error transforming data')
   }
 
+}
+
+// transform Artist response to match DB schema
+async function getArtistsFromTransformedData(array){
+  array.forEach(item => {
+    const isFound = transformedArtistResponse.find(artist => artist._id === item.artist.id)
+    if(isFound){
+      return
+    }
+    else{
+      transformedArtistResponse.push(new Artist({
+        _id: item.artist.id,
+        name: item.artist.name,
+        artist_art:{
+          cover: item.artist.picture,
+          cover_medium: item.artist.picture_medium,
+          cover_large: item.artist.picture_large
+        }
+      }))
+    }
+
+    
+  })
 }
 // #region DB
 // Query database for entries matching query
@@ -117,6 +167,8 @@ async function queryResult(query){
       const result = await response.text();
       apiSearchQueryResponse = [...result]
       transformedApiResponse = [...transformApiResult(result)]
+      getArtistsFromTransformedData(result)
+      return transformedApiResponse;
 
       return  result;
     } catch (error) {
@@ -127,22 +179,37 @@ async function queryResult(query){
 
 // #region User
   // save album to user library
-  async function saveToUserAlbumLibrary(userID, albumID){
-    await User.updateOne(
-      {userID},
-      {$addToSet:{'library.album': albumID} },
-      {upsert: true}
-    ).then()
-    .then()
-    .catch(error => {
+  async function saveToUserAlbumLibrary(userID, albumID,songID){
+    try{
+      albumExist = await Album.findOne({_id:albumID})
+
+      if(albumExist){
+        await User.updateOne(
+          {user_id:userID, 'library.album.id': albumID},
+          {$addToSet:{'library.album.song_ids': songID} },
+          {upsert: true}
+        ).then()
+        .then()
+      }
+      else{
+        await User.updateOne(
+          {user_id:userID},
+          {$set: {'library.album.id': albumID, 'library.album.song_ids': songID } },
+          {upsert: true}
+        ).then()
+      }
+    }
+    catch(error){
       console.log(`Error: ${error}`)
-    })
+    }
+
+
   }
 
   // save single to user library
   async function saveToUserSingleLibrary(userID, trackID){
       await User.updateOne(
-        {userID},
+        {user_id:userID},
         {$addToSet:{'library.singles': trackID} },
         {upsert: true}
       ).then()
@@ -154,7 +221,7 @@ async function queryResult(query){
   //save artist to user library
   async function saveToUserArtistLibrary(userID, artistID){
     await User.updateOne(
-      {userID},
+      {user_id:userID},
       {$addToSet:{'library.artists':artistID}},
       {upsert: true}
     ).then()
@@ -209,6 +276,23 @@ async function saveSingleSongToDB(index){
     console.log(`Error: ${error}`)
   })
 }
+
+async function saveSingleSongToDB(song){
+  const isFound = await Song.findOne(
+    {_id:song._id}
+  )
+  if(isFound){
+    console.log('Song already exists')
+  }
+  else{
+    song.save()
+    .then()
+    .then()
+    .catch(error =>{
+      console.log(`Error: ${error}`)
+    })
+  }
+}
   
   // #endregion
 
@@ -234,18 +318,33 @@ async function saveSingleSongToDB(index){
   }
 } */
   /// Save to album in DB
-  async function saveToAlbumInDB(albumId,songId){
-    await Album.updateOne(
-      {albumId}, 
-      {$addToSet: {song_ids:songId}},
-      {$upsert: true}
-
-    ).then()
-    .catch(error => {
-      console.log(`Error: ${error}`)
-    });
+  async function saveToAlbumInDB(album){
+    const isFound = await Album.findOne(
+      {_id:album._id}
+    )
+    if (isFound){
+      await Album.updateOne(
+        {_id:album._id}, 
+        {$addToSet: {song_ids:album.song_ids[0]}},
+        {$upsert: true}
+  
+      ).then()
+      .catch(error => {
+        console.log(`Error: ${error}`)
+      });
+    }
+    else{
+      await album.save()
+      .then()
+      .catch(error => {
+        console.log(`Error: ${error}`)
+      });
+    }
+    
 
   }
+
+ // async function saveToArtistInDB()
 
   /// Add New album/single to Library
   async function saveNewAlbumToDB(index){
@@ -315,6 +414,7 @@ async function saveSingleSongToDB(index){
 
 module.exports = {
     callBackend,
+    addToLibrary,
     saveToUserAlbumLibrary,
     saveToUserSingleLibrary,
     saveToUserArtistLibrary,

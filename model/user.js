@@ -11,19 +11,19 @@ const userSchema = new Schema({
         required:true
     },
     library:{
-        album:[{
-            type: Number,
-            required: false
-        }],
+        album:{
+            id:{ type: Number, required: false},
+            song_ids:[{type: Number, required: false}],
         singles:[{
             type: Number,
             required: false
         }],
-        artists:[{
+        artists:{
             type: Number,
-            required: false
-        }]  
+            required: false,
+        } 
 
+        }
     }
 
 
