@@ -37,7 +37,8 @@ const songSchema = new Schema({
     cover:{type:String, required:false},
     cover_medium:{type:String, required:false},
     cover_large:{type:String, required:false},
-  }
+  },
+  inLibrary:Boolean
 
 }, {timestamps:true})
 

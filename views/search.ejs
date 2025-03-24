@@ -7,9 +7,17 @@
         <h1>Welcome to the Music Board</h1>
     </header>
     <main>
-        <% search.forEach(item => { %>
-            <%- include(".partials/card.ejs", {content: item}) %>
-        <%}) %>
+        <% if(search.length > 0) {%>
+            <% search.forEach(item => { %>
+                <% if(item.inLibrary){ %>
+                    <%- include("./partials/cardUser.ejs", {content: item}) %>
+                <% }else{ %>
+                    <%- include("./partials/card.ejs", {content: item}) %>
+                <% } %> 
+            <% }) %>
+        <% } else{ %>
+            <p>Nothing to display</p>
+        <% } %>
         <p>This is a basic HTML template for the Music Board application.</p>
     </main>
     <%- include("./partials/footer.ejs") %>

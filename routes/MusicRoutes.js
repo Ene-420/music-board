@@ -7,7 +7,7 @@ const Album = require("../model/album");
 const User = require("../model/user");
 //const { user } = require("pg/lib/defaults");
 const {getSongID, testButton, } = require('../controller/musicControllerUI.js');
-const {callBackend} = require('../controller/musicControllerBck.js');
+const {callBackend, addToLibrary} = require('../controller/musicControllerBck.js');
 const musicRouter = Router();
 
 //const searchResult = [];
@@ -20,7 +20,7 @@ musicRouter.get("/library", (req, res) => {
   const data = {
     title: 'Library',
     library: []||[],
-    getSongID: getSongID
+    //getSongID: getSongID
   }
   res.render("library",  data);
 });
@@ -33,8 +33,10 @@ musicRouter.get("/album", (req, res) => {
   res.render("album", {album: []});
 });
 
-musicRouter.post("/search", async (req, res) => {
-  const response = await callBackend(req.body);
+musicRouter.post("/search", async(req, res) => {
+  const response =  await callBackend(req.body);
+  console.log(req.body) //2
+  console.log({response}) //3
   const data = {
     title: 'Search',
     search: response,
@@ -48,7 +50,21 @@ musicRouter.get("/search", async (req, res) =>{
   
 })
 musicRouter.post('/save-song', async(req, res) =>{
-  const songID = req.body;
+  
+  try{
+    const songID = req.body;
+    //getSongID(songID);
+    const response = await addToLibrary(songID);
+    console.log(response);
+    res.render('search', )
+  }catch(error){  
+    console.log(error)
+  }
+
+
+  
+
+
  
 })
 

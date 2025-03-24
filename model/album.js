@@ -16,15 +16,17 @@ const albumSchema = new Schema({
     id:{type: Number, required:true},
     name:{type: String, required:true},
   },
-  song_ids: [{
-    type: String,
-    required: true,
-  }],
+  album: {
+    title:{type: String, required:true},
+    song_ids: [{type: String,required: true,}],
+  },
+  
   album_art:{
       cover:{type:String, required:true},
       cover_medium:{type:String, required:true},
       cover_large:{type:String, required:true},  
-    }
+    },
+    inLibrary:Boolean
 }, {timestamps: true});
 
 const Album = mongoose.model('Album', albumSchema);

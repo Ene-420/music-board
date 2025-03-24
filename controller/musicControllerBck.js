@@ -6,21 +6,22 @@ const Artist = require('../model/artist.js');
 const Album = require('../model/album.js');
 const Song = require('../model/song.js');
 
-const apiSearchQueryResponse = [];    ///Save Api search result
-const transformedApiResponse = [];      ///Save transformed API response
-const transformedArtistResponse = [];   ///Save transformed Artist response
+let apiSearchQueryResponse = [];    ///Save Api search result
+let transformedApiResponse = [];      ///Save transformed API response
+let transformedArtistResponse = [];   ///Save transformed Artist response
 
 
-async function callBackend(query){
-  const {query, source} = query;
+ async function callBackend(item){
+  const {query, source} = item;
 
   try{
     if (source.includes('library')){
-      return await queryResult(query)
+      return  queryResult(query)
     }
     else{
+      console.log(transformedApiResponse.length) //1
       return await makeApiCall(query)
-        }
+      }
   }
   catch(error){
     console.log(`Error: ${error}`)
@@ -35,12 +36,16 @@ async function addToLibrary(ID){
     const item = transformedApiResponse.find(item => item._id === ID);
     switch (item.constructor.name){
       case 'Song':
-        await saveToUserSingleLibrary(userID, item._id);
-        await saveToUserArtistLibrary(userID, item._id);
+        const resultSingleLibrary  = await saveToUserSingleLibrary(userID, item._id);
+        const resultArtistLibrary = await saveToUserArtistLibrary(userID, item._id);
+        console.log({resultSingleLibrary, resultArtistLibrary})
+        return transformedApiResponse.map(item => item._id === ID ? item.inLibrary = true : item)
         break;
       case 'Album':
-        await saveToUserAlbumLibrary(userID, item._id, item.song_ids[0]); );
-        await saveToUserArtistLibrary(userID, item._id);
+        const resultAlbumLibrary = await saveToUserAlbumLibrary(userID, item._id, item.song_ids[0]);
+        resultArtistLibrary = await saveToUserArtistLibrary(userID, item._id);
+        console.log({resultAlbumLibrary, resultArtistLibrary})
+        return transformedApiResponse.map(item => item._id === ID ? item.inLibrary = true : item)
         break;
       default:
         return new Error('Error adding to library')
@@ -53,7 +58,7 @@ async function addToLibrary(ID){
   }
 }
 // transform API response to match DB schema
-async function transformApiResult(data){
+function transformApiResult(data){
   try{
     if (data.total < 1){
       return new Error('No data found')
@@ -76,8 +81,9 @@ async function transformApiResult(data){
             song_art:{
               cover: item.album.cover,
               cover_medium: item.album.cover_medium,
-              cover_large: item.album.cover_large
-            }
+              cover_large: item.album.cover_big
+            },
+            inLibrary: false
           })
         }
       
@@ -85,17 +91,21 @@ async function transformApiResult(data){
         else{
           return new Album({
             _id: item.album.id,
-            title: item.album.title,
+            title: item.title,
             artist:{
               id: item.artist.id,
               name: item.artist.name
             },
-            song_ids:[item.id],
+            album:{
+              title: item.album.title,
+              song_ids:[item.id],
+            },
             album_art:{
               cover: item.album.cover,
               cover_medium:item.album.cover_medium,
-              cover_large:item.album.cover_large
-            }
+              cover_large:item.album.cover_big
+            },
+            inLibrary: false
           })
         }
       })
@@ -150,30 +160,31 @@ async function queryResult(query){
 
 // #region API
   //uses search bar query to make API request
-  async function makeApiCall(query){
-    const fetch = require('node-fetch');
-
-    const url = `https://deezerdevs-deezer.p.rapidapi.com/search?q=${query}`;
-    const options = {
-      method: 'GET',
+   async function makeApiCall(query){
+    const axios = require('axios');
+    const url= 'https://deezerdevs-deezer.p.rapidapi.com/search?q'
+    const options=   {
+      
+      method: 'get',
+      params: {q: query},
       headers: {
         'x-rapidapi-key': process.env.RAPID_API_KEY,
         'x-rapidapi-host': process.env.RAPID_API_HOST
       }
-    };
-  
-    try {
-      const response = await fetch(url, options);
-      const result = await response.text();
-      apiSearchQueryResponse = [...result]
-      transformedApiResponse = [...transformApiResult(result)]
-      getArtistsFromTransformedData(result)
-      return transformedApiResponse;
-
-      return  result;
-    } catch (error) {
-      console.error(error);
     }
+    try{
+      const response = await axios.get(url, options)
+      transformedApiResponse =  transformApiResult(response.data)
+      apiSearchQueryResponse = [...response.data.data]
+      getArtistsFromTransformedData(response.data.data)
+      return transformedApiResponse;
+      //console.log(transformedApiResponse[1]) //4
+    }
+   //console.log(response.data.data[0])
+   catch(error)  {
+      console.error(new Error(`${error.message}`))
+    }
+    //
   }
 // #endregion
 

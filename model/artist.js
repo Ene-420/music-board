@@ -25,7 +25,6 @@ const artistSchema = new Schema({
         type: Number,
         required: false
     }],
-    required: false
 
   }
 }, {timestamps: true});
