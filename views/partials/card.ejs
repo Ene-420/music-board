@@ -1,16 +1,44 @@
 <div>
     <button class= 'music-card'>
-    <img src="<%= content.song_art.cover_medium || content.album_art.cover_large %>" alt="<%= content.name %>">
+        <% if( content.album?.title) { %>
+            <img src="<%= content.album_art.cover_medium||content.album_art.cover %>" alt="<%= content.title %>">
+        <% }else { %>
+            <img src="<%= content.song_art.cover_medium||content.song_art.cover %>" alt="<%= content.title %>">
+            <% } %>
+    
     <button class="music-card-play ">Play</button>
 
     </button>
     <div>
         <h3><%= content.title %></h3>
-        <h4><%= content.artist %></h4>
+        <h4><%= content.artist.name %></h4>
     </div>
-    <button data-id="<%= content._id %>" onclick="" ><i class="fa-solid fa-plus"></i></button>
+    <button data-id="<%= content._id %>" onclick="getSongID(event)" ><i class="fa-solid fa-plus"></i></button>
 </div>
 
+
+<script>
+    function getSongID(event){
+        event.preventDefault();
+        event.stopPropagation();
+        //console.log({event})
+        const {dataset} = event.currentTarget;
+        console.log('DATASET:', dataset)
+        fetch('/save-song', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(dataset.id)
+        })
+        .then(response => response.text())
+        .then(data =>{
+          console.log('REQUEST: ',data)
+          //return data
+        })
+        .catch(error =>{
+          console.error('Error', error);
+        });
+}
+</script>
 <!-- Compare this snippet from music-board/views/partials/card.ejs: -->
 <!-- <div>
  -->

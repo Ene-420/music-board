@@ -31,7 +31,7 @@ let transformedArtistResponse = [];   ///Save transformed Artist response
 }
 
 /// Usses Song ID to add song to library
-async function addToLibrary(ID){
+async function addToLibrary(userID,ID){
   try{
     const item = transformedApiResponse.find(item => item._id === ID);
     switch (item.constructor.name){
@@ -81,7 +81,9 @@ function transformApiResult(data){
             song_art:{
               cover: item.album.cover,
               cover_medium: item.album.cover_medium,
-              cover_large: item.album.cover_big
+              cover_large: item.album.cover_big,
+              cover_xl: item.album.cover_xl
+      
             },
             inLibrary: false
           })
@@ -103,7 +105,8 @@ function transformApiResult(data){
             album_art:{
               cover: item.album.cover,
               cover_medium:item.album.cover_medium,
-              cover_large:item.album.cover_big
+              cover_large:item.album.cover_big,
+              cover_xl: item.album.cover_xl
             },
             inLibrary: false
           })
@@ -133,7 +136,8 @@ async function getArtistsFromTransformedData(array){
         artist_art:{
           cover: item.artist.picture,
           cover_medium: item.artist.picture_medium,
-          cover_large: item.artist.picture_large
+          cover_large: item.artist.picture_big,
+          cover_xl: item.album.cover_xl
         }
       }))
     }
@@ -163,8 +167,7 @@ async function queryResult(query){
    async function makeApiCall(query){
     const axios = require('axios');
     const url= 'https://deezerdevs-deezer.p.rapidapi.com/search?q'
-    const options=   {
-      
+    const options = {
       method: 'get',
       params: {q: query},
       headers: {

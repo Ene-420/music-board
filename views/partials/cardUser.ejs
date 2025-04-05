@@ -1,11 +1,17 @@
 <div>
     <button class= 'music-card'>
-        <img src="<%= content.song_art.cover_medium || content.album_art.cover_large %>" alt="<%= content.name %>">    <button class="music-card-play">Play</button>
+
+        <% if( content.album?.title) { %>
+            <img src="<%= content.album_art.cover_medium||content.album_art.cover %>" alt="<%= content.title %>">
+        <% }else { %>
+            <img src="<%= content.song_art.cover_medium||content.song_art.cover %>" alt="<%= content.title %>">
+            <% } %>
+        <button class="music-card-play">Play</button>
 
     </button>
     <div>
         <h3><%= content.title %></h3>
-        <h4><%= content.name %></h4>
+        <h4><%= content.artist.name %></h4>
     </div>
     <button data-id="<%= content._id %>" onclick=<%= getSongID %> ><i class="fa-solid fa-trash-can"></i></button>
 </div>

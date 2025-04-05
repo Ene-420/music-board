@@ -12,6 +12,7 @@
                 <% if(item.inLibrary){ %>
                     <%- include("./partials/cardUser.ejs", {content: item}) %>
                 <% }else{ %>
+                    <!-- <%= console.log(item)%> -->
                     <%- include("./partials/card.ejs", {content: item}) %>
                 <% } %> 
             <% }) %>

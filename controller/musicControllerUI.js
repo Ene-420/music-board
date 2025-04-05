@@ -20,20 +20,23 @@
 
 // make POST requst to Search route  --> Save Button
 async function getSongID(event){
-  const {dataset} = event.target;
-  fetch('save-song', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(dataset)
-  })
-  .then(response => response.json())
-  .then(data =>{
-    console.log('REQUEST: ',data)
-    return data
-  })
-  .catch(error =>{
-    console.error('Error', error);
-  });
+  // event.preventDefault();
+  // console.log({event})
+  // const {dataset} = event.target;
+  // console.log('DATASET:', dataset)
+  // fetch('save-song', {
+  //   method: 'POST',
+  //   headers: {'Content-Type': 'application/json'},
+  //   body: JSON.stringify(dataset)
+  // })
+  // .then(response => response.json())
+  // .then(data =>{
+  //   console.log('REQUEST: ',data)
+  //   return data
+  // })
+  // .catch(error =>{
+  //   console.error('Error', error);
+  // });
 }
 
 function testButton(event){

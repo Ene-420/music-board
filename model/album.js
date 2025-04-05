@@ -24,7 +24,8 @@ const albumSchema = new Schema({
   album_art:{
       cover:{type:String, required:true},
       cover_medium:{type:String, required:true},
-      cover_large:{type:String, required:true},  
+      cover_large:{type:String, required:true}, 
+      cover_xl:{type:String, required:false} 
     },
     inLibrary:Boolean
 }, {timestamps: true});

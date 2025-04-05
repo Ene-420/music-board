@@ -35,8 +35,7 @@ musicRouter.get("/album", (req, res) => {
 
 musicRouter.post("/search", async(req, res) => {
   const response =  await callBackend(req.body);
-  console.log(req.body) //2
-  console.log({response}) //3
+  //console.log(req.body) //2
   const data = {
     title: 'Search',
     search: response,
@@ -52,20 +51,22 @@ musicRouter.get("/search", async (req, res) =>{
 musicRouter.post('/save-song', async(req, res) =>{
   
   try{
-    const songID = req.body;
-    //getSongID(songID);
-    const response = await addToLibrary(songID);
-    console.log(response);
-    res.render('search', )
+    console.log(req.body)
+    const songID = req.body.id;
+    console.log('SONG ID:', songID)
+    // const userID = '67f1895e6f5434b70298502fb'; //req.session.userID;
+    // //getSongID(songID);
+    // const response = await addToLibrary(songID,userID );
+    // console.log(response);
+    // const data = {
+    //   title: 'Search',
+    //   search: response,
+    //   getSongID: getSongID
+    // }
+    // res.render('search', data)
   }catch(error){  
     console.log(error)
   }
-
-
-  
-
-
- 
 })
 
 
