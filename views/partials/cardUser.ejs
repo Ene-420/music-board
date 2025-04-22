@@ -13,6 +13,8 @@
         <h3><%= content.title %></h3>
         <h4><%= content.artist.name %></h4>
     </div>
-    <button data-id="<%= content._id %>" onclick=<%= getSongID %> ><i class="fa-solid fa-trash-can"></i></button>
+    <form action="/save-song" method= "post">
+        <button data-id="<%= content._id %>" onclick=<%= getSongID %> ><i class="fa-solid fa-trash-can"></i></button>
+    </form>
 </div>
 

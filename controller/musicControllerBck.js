@@ -34,21 +34,17 @@ let transformedArtistResponse = [];   ///Save transformed Artist response
 async function addToLibrary(userID,ID){
   try{
     const item = transformedApiResponse.find(item => item._id === ID);
-    switch (item.constructor.name){
-      case 'Song':
+    if (item.song?.name){
         const resultSingleLibrary  = await saveToUserSingleLibrary(userID, item._id);
         const resultArtistLibrary = await saveToUserArtistLibrary(userID, item._id);
         console.log({resultSingleLibrary, resultArtistLibrary})
         return transformedApiResponse.map(item => item._id === ID ? item.inLibrary = true : item)
-        break;
-      case 'Album':
+    }
+    else{
         const resultAlbumLibrary = await saveToUserAlbumLibrary(userID, item._id, item.song_ids[0]);
         resultArtistLibrary = await saveToUserArtistLibrary(userID, item._id);
         console.log({resultAlbumLibrary, resultArtistLibrary})
         return transformedApiResponse.map(item => item._id === ID ? item.inLibrary = true : item)
-        break;
-      default:
-        return new Error('Error adding to library')
     }
 
   }
@@ -72,10 +68,11 @@ function transformApiResult(data){
             artist:{
               name: item.artist.name,
               id: item.artist.id
-
             },
-            album_id: item.album.id,
-            album_name: item.album.title,
+            song:{
+              id: item.album.id,
+              name: item.album.title,
+            }, 
             duration: item.duration,
             preview: item.preview,
             song_art:{

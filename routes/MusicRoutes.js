@@ -52,18 +52,17 @@ musicRouter.post('/save-song', async(req, res) =>{
   
   try{
     console.log(req.body)
-    const songID = req.body.id;
+    const songID = req.body.item_id;
     console.log('SONG ID:', songID)
-    // const userID = '67f1895e6f5434b70298502fb'; //req.session.userID;
-    // //getSongID(songID);
-    // const response = await addToLibrary(songID,userID );
-    // console.log(response);
-    // const data = {
-    //   title: 'Search',
-    //   search: response,
-    //   getSongID: getSongID
-    // }
-    // res.render('search', data)
+    const userID = '67f1895e6f5434b70298502fb'; //req.session.userID;
+    //getSongID(songID);
+    const response = await addToLibrary(songID,userID );
+    console.log(response);
+    const data = {
+      title: 'Search',
+      search: response,
+    }
+    res.render('search', data)
   }catch(error){  
     console.log(error)
   }

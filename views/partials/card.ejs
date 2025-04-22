@@ -13,22 +13,34 @@
         <h3><%= content.title %></h3>
         <h4><%= content.artist.name %></h4>
     </div>
-    <button data-id="<%= content._id %>" onclick="getSongID(event)" ><i class="fa-solid fa-plus"></i></button>
+    <form action="/save-song" method="post">
+      <input type="hidden" name="item_id" value="<%= content._id %>">
+      <button type="submit"><i class="fa-solid fa-plus"></i></button>
+      <!-- onclick="getSongID(event)" -->
+    </form>
 </div>
 
 
 <script>
-    function getSongID(event){
+
+ /*    function getSongID(event){
         event.preventDefault();
         event.stopPropagation();
         //console.log({event})
         const {dataset} = event.currentTarget;
         console.log('DATASET:', dataset)
-        fetch('/save-song', {
+        const fetch = require('node-fetch');
+
+        const urkl = '/save-song';
+        const options = {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(dataset.id)
-        })
+        }
+        try{}
+        catch(error){
+            console.error('Error', error);
+        }
         .then(response => response.text())
         .then(data =>{
           console.log('REQUEST: ',data)
@@ -37,7 +49,7 @@
         .catch(error =>{
           console.error('Error', error);
         });
-}
+} */
 </script>
 <!-- Compare this snippet from music-board/views/partials/card.ejs: -->
 <!-- <div>
