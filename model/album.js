@@ -16,10 +16,10 @@ const albumSchema = new Schema({
     id:{type: Number, required:true},
     name:{type: String, required:true},
   },
-  album: {
+  track: [{
     title:{type: String, required:true},
-    song_ids: [{type: String,required: true,}],
-  },
+    song_ids: {type: String,required: true},
+  }],
   
   album_art:{
       cover:{type:String, required:true},

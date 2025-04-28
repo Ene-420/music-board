@@ -1,16 +1,23 @@
 <div>
-    <button class= 'music-card'>
-        <% if( content.album?.title) { %>
-            <img src="<%= content.album_art.cover_medium||content.album_art.cover %>" alt="<%= content.title %>">
-        <% }else { %>
-            <img src="<%= content.song_art.cover_medium||content.song_art.cover %>" alt="<%= content.title %>">
-            <% } %>
-    
-    <button class="music-card-play ">Play</button>
+  <%let isAlbum = false; %>
+  <button class= 'music-card'>
+    <% console.log({content})%>
+      <% if('track' in content) { %>
+          <img src="<%= content.album_art.cover_medium||content.album_art.cover %>" alt="<%= content.track[0].title %>">
+          <% isAlbum = true; %>
+        <% } else { %>
+          <img src="<%= content.song_art.cover_medium||content.song_art.cover %>" alt="<%= content.title %>">
+        <% } %>
+  
+    <button class="music-card-play">Play</button>
 
     </button>
     <div>
-        <h3><%= content.title %></h3>
+      <% if(isAlbum){ %>
+          <h3><%= content.track[0].title %></h3>
+        <% } else{ %>
+          <h3><%= content.title %></h3>
+        <% }%>
         <h4><%= content.artist.name %></h4>
     </div>
     <form action="/save-song" method="post">

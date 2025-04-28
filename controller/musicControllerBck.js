@@ -33,16 +33,21 @@ let transformedArtistResponse = [];   ///Save transformed Artist response
 /// Usses Song ID to add song to library
 async function addToLibrary(userID,ID){
   try{
-    const item = transformedApiResponse.find(item => item._id === ID);
-    if (item.song?.name){
-        const resultSingleLibrary  = await saveToUserSingleLibrary(userID, item._id);
+    //console.log('ID:',typeof ID)
+    const item = transformedApiResponse.find(item => item._id === parseInt(ID));
+
+    console.log({item}) //1
+    if ('song' in item){
+        const resultSingleLibrary = await saveToUserSingleLibrary(userID, item._id);
         const resultArtistLibrary = await saveToUserArtistLibrary(userID, item._id);
+        const resultAddToSingleDB = await saveSingleSongToDB(item);
         console.log({resultSingleLibrary, resultArtistLibrary})
         return transformedApiResponse.map(item => item._id === ID ? item.inLibrary = true : item)
     }
     else{
-        const resultAlbumLibrary = await saveToUserAlbumLibrary(userID, item._id, item.song_ids[0]);
+        const resultAlbumLibrary = await saveToUserAlbumLibrary(userID, item._id, item.track[0].song_ids);
         resultArtistLibrary = await saveToUserArtistLibrary(userID, item._id);
+        const resultAddToAlbumLibrary = await saveToAlbumInDB(item);
         console.log({resultAlbumLibrary, resultArtistLibrary})
         return transformedApiResponse.map(item => item._id === ID ? item.inLibrary = true : item)
     }
@@ -90,21 +95,23 @@ function transformApiResult(data){
         else{
           return new Album({
             _id: item.album.id,
-            title: item.title,
+            title: item.album.title,
             artist:{
               id: item.artist.id,
               name: item.artist.name
             },
-            album:{
-              title: item.album.title,
-              song_ids:[item.id],
-            },
+            track:[{
+              title: item.title,
+              song_ids:item.id,
+            }],
             album_art:{
               cover: item.album.cover,
               cover_medium:item.album.cover_medium,
               cover_large:item.album.cover_big,
               cover_xl: item.album.cover_xl
             },
+            duration: item.duration,
+            preview: item.preview,
             inLibrary: false
           })
         }
@@ -205,7 +212,7 @@ async function queryResult(query){
       else{
         await User.updateOne(
           {user_id:userID},
-          {$set: {'library.album.id': albumID, 'library.album.song_ids': songID } },
+          {$push: {album: {id: albumID, song_ids: songID} } },
           {upsert: true}
         ).then()
       }
@@ -298,7 +305,6 @@ async function saveSingleSongToDB(song){
   else{
     song.save()
     .then()
-    .then()
     .catch(error =>{
       console.log(`Error: ${error}`)
     })
@@ -336,7 +342,7 @@ async function saveSingleSongToDB(song){
     if (isFound){
       await Album.updateOne(
         {_id:album._id}, 
-        {$addToSet: {song_ids:album.song_ids[0]}},
+        {$addToSet: {'track.title':album.track[0].title,'album.song_ids':album.track[0].song_ids} },
         {$upsert: true}
   
       ).then()

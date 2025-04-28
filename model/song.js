@@ -14,14 +14,9 @@ const songSchema = new Schema({
     id:{type: Number, required:true},
     name:{type: String, required:true},
   },
-
-  album_id: {
-        type: Number,
-        required:false
-  },
-  album_name:{
-      type: String,
-      required: false
+  song:{
+    title:{type: String, required:true},
+    id:{type: Number, required:true},
   },
 
   duration:{
