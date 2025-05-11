@@ -31,13 +31,13 @@ let transformedArtistResponse = [];   ///Save transformed Artist response
 }
 
 /// Usses Song ID to add song to library
-async function addToLibrary(userID,ID){
+async function addToLibrary(userID,ID,songID){
   try{
     //console.log('ID:',typeof ID)
     const item = transformedApiResponse.find(item => item._id === parseInt(ID));
 
     console.log({item}) //1
-    if ('song' in item){
+    if ('song' in item && songID === null){
         const resultSingleLibrary = await saveToUserSingleLibrary(userID, item._id);
         const resultArtistLibrary = await saveToUserArtistLibrary(userID, item._id);
         const resultAddToSingleDB = await saveSingleSongToDB(item);
@@ -45,7 +45,7 @@ async function addToLibrary(userID,ID){
         return transformedApiResponse.map(item => item._id === ID ? item.inLibrary = true : item)
     }
     else{
-        const resultAlbumLibrary = await saveToUserAlbumLibrary(userID, item._id, item.track[0].song_ids);
+        const resultAlbumLibrary = await saveToUserAlbumLibrary(userID, parseInt(ID), parseInt(songID));
         resultArtistLibrary = await saveToUserArtistLibrary(userID, item._id);
         const resultAddToAlbumLibrary = await saveToAlbumInDB(item);
         console.log({resultAlbumLibrary, resultArtistLibrary})
@@ -209,10 +209,11 @@ async function queryResult(query){
         ).then()
         .then()
       }
+
       else{
         await User.updateOne(
           {user_id:userID},
-          {$push: {album: {id: albumID, song_ids: songID} } },
+          {$push: {'library.album': {id: albumID, song_ids: [songID]} } },
           {upsert: true}
         ).then()
       }
@@ -337,12 +338,13 @@ async function saveSingleSongToDB(song){
   /// Save to album in DB
   async function saveToAlbumInDB(album){
     const isFound = await Album.findOne(
-      {_id:album._id}
+      { track:{$elemMatch: {song_ids: album.track[0].song_ids}}}
     )
+    console.log({isFound})
     if (isFound){
       await Album.updateOne(
         {_id:album._id}, 
-        {$addToSet: {'track.title':album.track[0].title,'album.song_ids':album.track[0].song_ids} },
+        {$push:{'library.track': {title:album.track[0].title,song_ids:album.track[0].song_ids}}},
         {$upsert: true}
   
       ).then()
@@ -356,9 +358,7 @@ async function saveSingleSongToDB(song){
       .catch(error => {
         console.log(`Error: ${error}`)
       });
-    }
-    
-
+    } 
   }
 
  // async function saveToArtistInDB()
