@@ -36,7 +36,7 @@ async function addToLibrary(userID,ID,songID){
     //console.log('ID:',typeof ID)
     const item = transformedApiResponse.find(item => item._id === parseInt(ID));
 
-    console.log({item}) //1
+    //console.log({item}) //1
     if ('song' in item && songID === null){
         const resultSingleLibrary = await saveToUserSingleLibrary(userID, item._id);
         const resultArtistLibrary = await saveToUserArtistLibrary(userID, item._id);
@@ -199,9 +199,11 @@ async function queryResult(query){
   // save album to user library
   async function saveToUserAlbumLibrary(userID, albumID,songID){
     try{
-      albumExist = await Album.findOne({_id:albumID})
+      albumExist = await User.findOne({'library.album.id': albumID})
+      userExist = checkUserExists(userID)
 
-      if(albumExist){
+      console.log(`albumExist: ${albumExist}`)
+      if(albumExist && userExist){
         await User.updateOne(
           {user_id:userID, 'library.album.id': albumID},
           {$addToSet:{'library.album.song_ids': songID} },
@@ -210,21 +212,40 @@ async function queryResult(query){
         .then()
       }
 
-      else{
+      else if (!albumExist){
         await User.updateOne(
           {user_id:userID},
-          {$push: {'library.album': {id: albumID, song_ids: [songID]} } },
+          {$addToSet: {'library.album': {id: albumID, song_ids: [songID]} } },
           {upsert: true}
         ).then()
+      }
+      else if(!userExist){
+        new User({
+          user_id: userID,
+          library:{
+            album:[{
+              id: albumID, song_ids: [songID] }],
+            artist:[],
+            singles:[]
+          }
+        })
+        .save()
+        .then()
+        .catch(error => {
+          console.error(new Error(`${error.message}`))
+        })
       }
     }
     catch(error){
       console.log(`Error: ${error}`)
     }
-
-
   }
 
+
+  //check user exists
+  async function checkUserExists(userID){
+      return await User.findOne({user_id: userID })
+  }
   // save single to user library
   async function saveToUserSingleLibrary(userID, trackID){
       await User.updateOne(
@@ -249,6 +270,8 @@ async function queryResult(query){
       console.log(`Error: ${error}`)
     })
   }
+
+  //async function createUserFor()
 // #endregion
 
 // #region Song
@@ -337,28 +360,32 @@ async function saveSingleSongToDB(song){
 } */
   /// Save to album in DB
   async function saveToAlbumInDB(album){
-    const isFound = await Album.findOne(
-      { track:{$elemMatch: {song_ids: album.track[0].song_ids}}}
+    const albumExist = await Album.findOne({_id: album._id})
+    const trackExist = await Album.findOne(
+      { 'track.song_ids':album.track[0].song_ids }
     )
-    console.log({isFound})
-    if (isFound){
+    console.log({'trackExist': trackExist, 'albumExist': albumExist })
+    if (trackExist && albumExist){
+   
+    }
+    else if(!trackExist && albumExist){
       await Album.updateOne(
         {_id:album._id}, 
-        {$push:{'library.track': {title:album.track[0].title,song_ids:album.track[0].song_ids}}},
+        {$addToSet:{track: {title:album.track[0].title,song_ids:album.track[0].song_ids}}},
         {$upsert: true}
   
       ).then()
       .catch(error => {
         console.log(`Error: ${error}`)
       });
-    }
+    } 
     else{
       await album.save()
       .then()
       .catch(error => {
         console.log(`Error: ${error}`)
       });
-    } 
+    }
   }
 
  // async function saveToArtistInDB()

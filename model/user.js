@@ -13,7 +13,7 @@ const userSchema = new Schema({
     library:{
         album:[{
             id:{ type: Number, required: false},
-            song_ids:{type: Number, required: false}
+            song_ids:{type: [Number], required: false}
         }],
         singles:[{
             type: Number,
