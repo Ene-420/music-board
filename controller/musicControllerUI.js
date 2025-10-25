@@ -40,4 +40,4 @@ function testButton(event){
   
 }
 
-module.exports = {getSongID, getSearchQuery, testButton}
+module.exports = {getSongID, testButton}
