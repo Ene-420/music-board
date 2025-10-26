@@ -16,7 +16,8 @@
     "ejs-lint": "^2.0.1",
     "express": "^4.21.2",
     "mongoose": "^8.9.5",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "eslint": "^9.18.0"
