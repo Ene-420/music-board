@@ -1,34 +1,17 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-
-const artistSchema = new Schema({
-    _id: {
-        type: String,
-        required: true
-    },
-  name:{
-        type: String,
-        required: true
-  },
-  artist_art:{
-    
-    cover:{type:String, required:true},
-    cover_medium:{type:String, required:true},
-    cover_large:{type:String, required:true}, 
-    cover_xl:{type:String, required:false} 
-  },
-  library:{
-    album:[{
-        type: Number,
-        required: false
-    }],
-    singles:[{
-        type: Number,
-        required: false
-    }],
-
+class Artist{
+constructor(artistID, artistName){
+  this.artistID = artistID;
+  this.artistName = artistName;
   }
-}, {timestamps: true});
+}
+class artistCover{
+  constructor(artistID,artistName, cover, cover_medium, cover_large){
+    this.artistID = artistID;
+    this.artistName = artistName;
+    this.cover = cover;
+    this.cover_medium = cover_medium;
+    this.cover_large = cover_large;
+  }
+}
 
-const Artist = mongoose.model('Artist', artistSchema);
-module.exports = Artist;
+module.exports = {Artist, artistCover}

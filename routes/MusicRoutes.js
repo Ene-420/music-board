@@ -58,11 +58,11 @@ musicRouter.post('/save-song', async(req, res) =>{
     const userID = '67f1895e6f5434b70298502fb'; //req.session.userID;
     if(type.includes('song')){
       const item_id = req.body.item_id;
-      response = await addToLibrary(userID,item_id, null );
+      response = await addToLibrary(item_id);
     }else{
       item_id = req.body.item_id;
       songID = req.body.item_songID;
-      response = addToLibrary(userID,item_id, songID)
+      response = addToLibrary(item_id)
     }
     const data = {
       title: 'Search',

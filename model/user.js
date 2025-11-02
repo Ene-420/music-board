@@ -1,32 +1,18 @@
-const mongoose = require('mongoose');
-const Song = require('./song');
-const Album = require('./album');
-const Schema = mongoose.Schema;
+const uuid = require('uuid');
 
-
-const userSchema = new Schema({
-    
-    user_id: {
-        type: String,
-        required:true
-    },
-    library:{
-        album:[{
-            id:{ type: Number, required: false},
-            song_ids:{type: [Number], required: false}
-        }],
-        singles:[{
-            type: Number,
-            required: false
-        }],
-        artists:[{
-            type: Number,
-            required: false,
-        }] 
+class User{
+    constructor(){
+        this.userID = uuid.v4()
     }
+}
 
+class UserAlbum{
+    constructor( userID, albumID, trackID, albumCoverID){
+        this.albumID = albumID;
+        this.userID = userID;
+        this.trackID = trackID;
+        this.albumCoverID = albumCoverID;
+    }
+}
 
-}, {timestamps: true});
-
-const User = mongoose.model('User', userSchema);
-module.exports = User;
+module.exports = {User, UserAlbum}
