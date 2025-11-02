@@ -1,12 +1,23 @@
-require('dotenv').config();
-const express = require("express");
+
+import dotenv from 'dotenv';
+import express from 'express';
+import musicRouter from './routes/MusicRoutes.js';
+import { Client } from 'pg';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+dotenv.config();
+//const express = require("express");
 const app = express();
-const musicRouter = require('./routes/MusicRoutes');
-const mongoose = require('mongoose');
-const { Client } = require("pg");
-const path = require('path');
+
+//const mongoose = require('mongoose');
+//const { Client } = require("pg");
+//const path = require('path');
 // const pwd = process.env.DB_PWD;
 // const dbUser = process.env.DB_USER;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const PORT =  process.env.PORT|| 3000;
 const client =  new Client({
     connectionString: `postgresql://${process.env.DB_USER}:${process.env.DB_PWD}@localhost:5432/${process.env.DB}`,

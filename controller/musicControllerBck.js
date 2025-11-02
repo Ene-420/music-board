@@ -14,11 +14,11 @@ import {insertIntoSongTable, addToUserLibrary} from './dbController.js'
 //const Track = require('../model/track.js')
 //const {insertIntoSongTable, insertIntoTrackCover, addToUserLibrary} = require('./dbController.js');
 
-const apiSearchQueryResponse = [];    ///Save Api search result
+let apiSearchQueryResponse = [];    ///Save Api search result
 let transformedApiResponse = [];      ///Save transformed API response
 
 
-async function callBackend(item){
+export async function callBackend(item){
   const {query, source} = item;
 
   try{
@@ -62,7 +62,7 @@ async function transformApiResult(data){
 
 }
 
-async function addToLibrary(songID){
+export async function addToLibrary(songID){
   const track = transformedApiResponse.find(item => item.songID === parseInt(songID));
 
   if (track){
@@ -101,8 +101,7 @@ async function addToLibrary(songID){
       const response = await axios.get(url, options)
       transformedApiResponse =  transformApiResult(response.data)
       apiSearchQueryResponse = [...response.data.data]
-      getArtistsFromTransformedData(response.data.data)
-
+      
       return transformedApiResponse;
 
     } catch (error) {
@@ -144,14 +143,3 @@ async function saveSingleSongToDB(index){
   }
 
 
-module.exports = {
-    callBackend,
-    saveToUserAlbumLibrary,
-    saveToUserSingleLibrary,
-    saveToUserArtistLibrary,
-    saveSingleSongToDB,
-    saveToAlbumInDB,
-    saveNewAlbumToDB,
-    saveArtistToDB,
-    addToLibrary
-}

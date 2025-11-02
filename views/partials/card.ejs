@@ -21,14 +21,9 @@
         <h4><%= content.artist.name %></h4>
     </div>
     <form action="/save-song" method="post">
-      <%if('track' in content){ %>
         <input type="hidden" name="item_type" value="album">
         <input type="hidden" name="item_id" value="<%= content._id %>">
         <input type="hidden" name="item_songID" value="<%= content.track[0].song_ids %>">
-      <%}else{ %>
-        <input type="hidden" name="item_type" value="song">
-        <input type="hidden" name="item_id" value="<%= content._id %>">
-      <% }%>
       <button type="submit"><i class="fa-solid fa-plus"></i></button>
       <!-- onclick="getSongID(event)" -->
     </form>

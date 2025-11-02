@@ -1,13 +1,16 @@
-const { Router } = require("express");
-const express = require('express');
+import express, {Router} from 'express';
+import { callBackend, addToLibrary } from '../controller/musicControllerBck.js';
+
+//const { Router } = require("express");
+//const express = require('express');
 //const app = express();
-const Artist = require("../model/artist");
-const Song = require("../model/song");
-const Album = require("../model/album");
-const User = require("../model/user");
+//const Artist = require("../model/artist");
+//const Song = require("../model/song");
+//const Album = require("../model/album");
+//const User = require("../model/user");
 //const { user } = require("pg/lib/defaults");
-const {getSongID, testButton, } = require('../controller/musicControllerUI.js');
-const {callBackend, addToLibrary} = require('../controller/musicControllerBck.js');
+//const {getSongID, testButton, } = require('../controller/musicControllerUI.js');
+//const {callBackend, addToLibrary} = require('../controller/musicControllerBck.js');
 const musicRouter = Router();
 
 //const searchResult = [];
@@ -39,7 +42,7 @@ musicRouter.post("/search", async(req, res) => {
   const data = {
     title: 'Search',
     search: response,
-    getSongID: getSongID
+    //getSongID: getSongID
   }
   res.render('search', data);
   
@@ -47,7 +50,7 @@ musicRouter.post("/search", async(req, res) => {
 
 musicRouter.get("/search", async (req, res) =>{
   
-})
+});
 musicRouter.post('/save-song', async(req, res) =>{
   
   try{
@@ -72,45 +75,10 @@ musicRouter.post('/save-song', async(req, res) =>{
   }catch(error){  
     console.log(error)
   }
-})
+});
 
+export default musicRouter;
 
-async function queryResult(query){
-  try {
-    const [albumResult, songResult, artistResult] =  await Promise.all([
-      Album.find({title: `${query}`}),
-      Song.find({title:`${query}`}),
-      Artist.find({name: `${query}`}),
-    ]);
-    return [...albumResult, ...songResult, ...artistResult ]
-
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-
-
-async function apiSearchResult(query){
-  const fetch = require('node-fetch');
-
-  const url = `https://deezerdevs-deezer.p.rapidapi.com/search?q=${query}`;
-  const options = {
-    method: 'GET',
-    headers: {
-      'x-rapidapi-key': process.env.RAPID_API_KEY,
-      'x-rapidapi-host': process.env.RAPID_API_HOST
-    }
-  };
-
-  try {
-    const response = await fetch(url, options);
-    const result = await response.text();
-    return  result;
-  } catch (error) {
-    console.error(error);
-  }
-}
 
 /*
 on test branch to merge with main -->
@@ -126,5 +94,3 @@ git merge main
 git push origin test
  */
 
-
-module.exports = musicRouter;
